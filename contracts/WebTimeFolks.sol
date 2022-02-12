@@ -56,7 +56,7 @@ contract WebTimeFolks is ERC721Enumerable, Ownable {
         }
     }
 
-    function numAvailableToMint(address addr) external view returns (uint8) {
+    function getNumAvailableToMint(address addr) external view returns (uint8) {
         return _whiteList[addr];
     }
 
