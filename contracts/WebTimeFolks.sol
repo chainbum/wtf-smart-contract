@@ -11,7 +11,7 @@ contract WebTimeFolks is ERC721Enumerable, Ownable {
     string private notRevealedUri;
     string private baseExtension = ".json";
 
-    bool public isWhiteListActive = false;
+    bool public isWhiteListSaleActive = false;
     bool public isPublicSaleActive = false;
     bool public revealed = false;
 
@@ -34,19 +34,19 @@ contract WebTimeFolks is ERC721Enumerable, Ownable {
         notRevealedUri = _notRevealedURI;
     }
 
-    function setIsWhiteListActive(bool _isWhiteListActive) external onlyOwner {
-        isWhiteListActive = _isWhiteListActive;
+    function setIsWhiteListSaleActive(bool _isWhiteListActive) external onlyOwner {
+        isWhiteListSaleActive = _isWhiteListActive;
     }
 
-    function setIsPublicSaleActive(bool _isPublicSaleActive) public onlyOwner {
+    function setIsPublicSaleActive(bool _isPublicSaleActive) external onlyOwner {
         isPublicSaleActive = _isPublicSaleActive;
     }
 
-    function setRevealed(bool _revealed) public onlyOwner {
-      revealed = _revealed;
+    function setRevealed(bool _revealed) external onlyOwner {
+        revealed = _revealed;
     }
 
-    function setPrice(uint256 _price) public onlyOwner {
+    function setPrice(uint256 _price) external onlyOwner {
         PRICE = _price;
     }
 
@@ -60,15 +60,23 @@ contract WebTimeFolks is ERC721Enumerable, Ownable {
         return _whiteList[addr];
     }
 
+    function getIsWhiteListSaleActive() external view returns (bool) {
+        return isWhiteListSaleActive;
+    }
+
+    function getIsPublicSaleActive() external view returns (bool) {
+        return isPublicSaleActive;
+    }
+
     function _baseURI() internal view virtual override returns (string memory) {
         return baseURI;
     }
 
     function mintWhiteList(uint8 numberOfTokens) external payable {
         uint256 supply = totalSupply();
-        require(isWhiteListActive, "WL is not active");
+        require(isWhiteListSaleActive, "WL is not active");
         require(numberOfTokens <= _whiteList[msg.sender], "Don't be greedy!");
-        require(supply + numberOfTokens <= MAX_SUPPLY, "Purchase would exceed max available tokens");
+        require(supply + numberOfTokens <= MAX_SUPPLY, "Purchase would exceed max tokens");
         require(PRICE * numberOfTokens <= msg.value, "ETH sent is not correct");
 
         _whiteList[msg.sender] -= numberOfTokens;
@@ -77,15 +85,15 @@ contract WebTimeFolks is ERC721Enumerable, Ownable {
         }
     }
 
-    function mint(uint256 _mintAmount) public payable {
+    function mintPublic(uint256 numberOfTokens) external payable {
         uint256 supply = totalSupply();
         require(isPublicSaleActive, "Public sale is not active");
-        require(_mintAmount <= MAX_MINT_AMOUNT, "Don't be greedy!");
-        require(supply + _mintAmount <= MAX_SUPPLY, "Purchase would exceed max tokens");
-        require(PRICE * _mintAmount <= msg.value, "Ether value sent is not correct");
+        require(numberOfTokens <= MAX_MINT_AMOUNT, "Don't be greedy!");
+        require(supply + numberOfTokens <= MAX_SUPPLY, "Purchase would exceed max tokens");
+        require(PRICE * numberOfTokens <= msg.value, "ETH sent is not correct");
 
 
-        for (uint256 i = 1; i <= _mintAmount; i++) {
+        for (uint256 i = 1; i <= numberOfTokens; i++) {
             _safeMint(msg.sender, supply + i);
         }
     }
@@ -110,7 +118,7 @@ contract WebTimeFolks is ERC721Enumerable, Ownable {
                 : "";
     }
 
-    function reserve(uint256 n) public onlyOwner {
+    function reserve(uint256 n) external onlyOwner {
         uint supply = totalSupply();
         uint i;
         for (i = 0; i < n; i++) {
