@@ -1,19 +1,67 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-describe("Greeter", function () {
-  it("Should return the new greeting once it's changed", async function () {
-    const Greeter = await ethers.getContractFactory("Greeter");
-    const greeter = await Greeter.deploy("Hello, world!");
-    await greeter.deployed();
+/*
 
-    expect(await greeter.greet()).to.equal("Hello, world!");
+### Features ###
 
-    const setGreetingTx = await greeter.setGreeting("Hola, mundo!");
+- WhiteList functionality
+  - setIsWhiteListSaleActive §
+  - getIsWhiteListSaleActive §
+  - setWhiteList             §
+  - getNumAvailableToMint    §
+  - mintWhiteList
 
-    // wait until the transaction is mined
-    await setGreetingTx.wait();
+- Public mint functionality
+  - setIsPublicSaleActive
+  - getIsPublicSaleActive
+  - mintPublic
 
-    expect(await greeter.greet()).to.equal("Hola, mundo!");
-  });
-});
+- Reveal functionality
+  - setRevealed
+
+- Reserve
+  - reserve
+
+- Withdraw
+  - withdraw
+
+- token uri
+  - tokenURI
+
+- Misc
+  - setPrice
+
+*/
+
+
+
+describe("WhiteList - On/Off", function () {
+  it("Should check its deactivated then activate WhiteList sale ", async function () {
+    const WebTimeFolks = await hre.ethers.getContractFactory("WebTimeFolks");
+    const wtf = await WebTimeFolks.deploy("ipfs://QmczJSS5DWWHUtLHEzgkTKDy3ie6ryN6RzGyB1zHqTXkko/", "ipfs://QmZxKNk16sGX9ydRvwZP2aMxFV9yKAwYz9YbRgiDL6PFa3/hidden.json");
+    await wtf.deployed();
+
+    expect(await wtf.getIsWhiteListSaleActive()).to.equal(false);
+
+    const txn = await wtf.setIsWhiteListSaleActive(true);
+    await txn.wait();
+
+    expect(await wtf.getIsWhiteListSaleActive()).to.equal(true);
+
+  })
+})
+
+describe("WhiteList - setWhiteList", function () {
+  it("Should  ", async function () {
+    const WebTimeFolks = await hre.ethers.getContractFactory("WebTimeFolks");
+    const wtf = await WebTimeFolks.deploy("ipfs://QmczJSS5DWWHUtLHEzgkTKDy3ie6ryN6RzGyB1zHqTXkko/", "ipfs://QmZxKNk16sGX9ydRvwZP2aMxFV9yKAwYz9YbRgiDL6PFa3/hidden.json");
+    await wtf.deployed();
+
+    const txn = await wtf.setWhiteList(['0x2ad85B6FF7B0D9fd9c1858cEeFC9119160856270'], 5);
+    await txn.wait();
+
+    expect(await wtf.getNumAvailableToMint('0x2ad85B6FF7B0D9fd9c1858cEeFC9119160856270')).to.equal(5);
+
+  })
+})
