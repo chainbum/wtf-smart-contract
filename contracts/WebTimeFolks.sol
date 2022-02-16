@@ -92,8 +92,7 @@ contract WebTimeFolks is ERC721Enumerable, Ownable {
         require(supply + numberOfTokens <= MAX_SUPPLY, "Purchase would exceed max tokens");
         require(PRICE * numberOfTokens <= msg.value, "ETH sent is not correct");
 
-
-        for (uint256 i = 1; i <= numberOfTokens; i++) {
+        for (uint256 i = 0; i <= numberOfTokens; i++) {
             _safeMint(msg.sender, supply + i);
         }
     }
