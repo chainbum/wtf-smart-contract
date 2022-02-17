@@ -1,10 +1,10 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "erc721a/contracts/ERC721A.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract WebTimeFolks is ERC721Enumerable, Ownable {
+contract WebTimeFolks is ERC721A, Ownable {
     using Strings for uint256;
 
     string private baseURI;
@@ -21,7 +21,7 @@ contract WebTimeFolks is ERC721Enumerable, Ownable {
 
     mapping(address => uint8) private _whiteList;
 
-    constructor(string memory _initBaseURI, string memory _initNotRevealedUri) ERC721("WebTimeFolks", "WTF") {
+    constructor(string memory _initBaseURI, string memory _initNotRevealedUri) ERC721A("WebTimeFolks", "WTF") {
         setBaseURI(_initBaseURI);
         setNotRevealedURI(_initNotRevealedUri);
     }
@@ -80,9 +80,7 @@ contract WebTimeFolks is ERC721Enumerable, Ownable {
         require(PRICE * numberOfTokens <= msg.value, "ETH sent is not correct");
 
         _whiteList[msg.sender] -= numberOfTokens;
-        for (uint256 i = 0; i < numberOfTokens; i++) {
-            _safeMint(msg.sender, supply + i);
-        }
+        _safeMint(msg.sender, numberOfTokens);
     }
 
     function mintPublic(uint256 numberOfTokens) external payable {
@@ -92,9 +90,7 @@ contract WebTimeFolks is ERC721Enumerable, Ownable {
         require(supply + numberOfTokens <= MAX_SUPPLY, "Purchase would exceed max tokens");
         require(PRICE * numberOfTokens <= msg.value, "ETH sent is not correct");
 
-        for (uint256 i = 0; i <= numberOfTokens; i++) {
-            _safeMint(msg.sender, supply + i);
-        }
+        _safeMint(msg.sender, numberOfTokens);
     }
 
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
